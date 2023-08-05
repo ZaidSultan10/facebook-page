@@ -28,9 +28,9 @@ const Form = ({isLogin, isSignUpPage, isMain}) => {
             setErrorMessage('')
             router.push('/signup')
         } else if(route == 'signuproute'){
-            if((!emailInput || !password || !firstName || !lastName || !dob || !gender)){
+            if((!emailInput || !password || !firstName || !lastName || !dobMonth || !dobYear || !gender)){
                 setErrorMessage('Please fill all details')
-            } else if(password && firstName && lastName && dob && gender && emailInput && emailInput.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
+            } else if(password && firstName && lastName && dobMonth && dobYear && gender && emailInput && emailInput.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
                 setIsSubmit(false)
                 setNotValidEmail(false)
                 setErrorMessage('')
