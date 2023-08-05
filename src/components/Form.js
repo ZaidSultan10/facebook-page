@@ -123,7 +123,7 @@ const Form = ({isLogin, isSignUpPage, isMain}) => {
                     </select>
                     <select onChange={(e) => handleChange(e,'dobyear')} style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}}>
                         {[...Array(moment().diff('1923-01-01', 'years'))]?.map((item, i) => (
-                            <option key={i}>{i+1923}</option>
+                            <option key={i}>{i+1924}</option>
                         ))}
                     </select>
                     {/* <input style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}} type={`text`} value={firstName} handleChange={(e)=> handleChange(e,'firstname')} placeholder={`First Name`}/>
