@@ -3,6 +3,7 @@ import Input from './Input'
 import Button from './Button'
 import style from '../app/page.module.css'
 import { useRouter } from 'next/navigation'
+import moment from 'moment'
 
 const Form = ({isLogin, isSignUpPage, isMain}) => {
 
@@ -11,7 +12,9 @@ const Form = ({isLogin, isSignUpPage, isMain}) => {
     const [password, setPassword] = useState('')
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
-    const [dob, setDob] = useState('')
+    const [dobDate, setDobDate] = useState(moment().format('DD'))
+    const [dobMonth, setDobMonth] = useState(moment().format('MMM'))
+    const [dobYear, setDobYear] = useState(moment().year())
     const [gender, setGender] = useState('Male')
     const [notValidEmail, setNotValidEmail] = useState(false)
     const [isSubmit, setIsSubmit] = useState(false)
@@ -69,8 +72,12 @@ const Form = ({isLogin, isSignUpPage, isMain}) => {
             setFirstName(e.target.value)
         } else if(field == 'lastname'){
             setLastName(e.target.value)
-        } else if(field =='dob'){
-            setDob(e.target.value)
+        } else if(field =='dobdate'){
+            setDobDate(e.target.value)
+        } else if(field =='dobmonth'){
+            setDobMonth(e.target.value)
+        } else if(field =='dobyear'){
+            setDobYear(e.target.value)
         } else if(field == 'gender'){
             setGender(e.target.value)
         }
@@ -104,17 +111,20 @@ const Form = ({isLogin, isSignUpPage, isMain}) => {
                     <p className={style.icon}>{`?`}</p>
                 </div>
                 <div className={style.dobOptionContainer}>
-                    <select onChange={(e) => handleChange(e,'dob')} style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}}>
-                        <option>{`Select...`}</option>
-                        <option>{`Jan`}</option>
+                    <select onChange={(e) => handleChange(e,'dobdate')} style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}}>
+                        {[...Array(moment(`${dobYear}-${dobMonth}`, "YYYY-MMM").daysInMonth())]?.map((item, i) => (
+                            <option key={i}>{i+1}</option>
+                        ))}
                     </select>
-                    <select onChange={(e) => handleChange(e,'dob')} style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}}>
-                        <option>{`Select...`}</option>
-                        <option>{`1`}</option>
+                    <select onChange={(e) => handleChange(e,'dobmonth')} style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}}>
+                        {moment.monthsShort()?.map(item => (
+                            <option key={item}>{item}</option>
+                        ))}
                     </select>
-                    <select onChange={(e) => handleChange(e,'dob')} style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}}>
-                        <option>{`Select...`}</option>
-                        <option>{`2000`}</option>
+                    <select onChange={(e) => handleChange(e,'dobyear')} style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}}>
+                        {[...Array(moment().diff('1923-01-01', 'years'))]?.map((item, i) => (
+                            <option key={i}>{i+1923}</option>
+                        ))}
                     </select>
                     {/* <input style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}} type={`text`} value={firstName} handleChange={(e)=> handleChange(e,'firstname')} placeholder={`First Name`}/>
                     <input style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 0px 12px 8px'}} type={`text`} value={lastName} handleChange={(e)=> handleChange(e,'lastname')} placeholder={`Last Name`}/> */}
