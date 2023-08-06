@@ -5,7 +5,6 @@ import Form from '../../components/Form'
 import { useEffect } from 'react';
 
 const page = () => {
-  if (typeof window !== 'undefined'){
     return (
       <main className={styles.loginContainer}>
           <div className={styles.logoLeftLogo}>
@@ -19,7 +18,6 @@ const page = () => {
           </div>
       </main>
     )
-  }
 }
 
 export default page
