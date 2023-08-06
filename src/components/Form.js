@@ -4,6 +4,8 @@ import Button from './Button'
 import style from '../app/page.module.css'
 import { useRouter } from 'next/navigation'
 import moment from 'moment'
+import {addDoc, collection, getDoc, getDocs, doc,query,where} from 'firebase/firestore'
+import {db} from '../app/firebaseConfig'
 
 const Form = ({isLogin, isSignUpPage, isMain}) => {
 
@@ -22,22 +24,56 @@ const Form = ({isLogin, isSignUpPage, isMain}) => {
     
     const router = useRouter();
 
-    const handleClick = (route) => {
+    const sendDataToDob = async (user) => {
+        const userCollectionRef = collection(db, 'users')
+        if(user && await checkAccountExistance(user?.email)){
+            setErrorMessage(``)
+            await addDoc(userCollectionRef, user)
+            router.push('/signup-success')
+        } else{
+            setErrorMessage(`Email already exists`)
+        }
+    }
+
+    const checkAccountExistance = async (email) => {
+        let getUsers = []
+        const q = query(collection(db, "users"), where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            getUsers.push(doc.data())
+          });
+        return getUsers.length > 0 ? false : true
+    }
+
+    const validLogin = async(data) => {
+        let getUsers = []
+        const q = query(collection(db, "users"), where("email", "==", data.email), where("password", "==", data.password));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            getUsers.push(doc.data())
+          });
+        return getUsers.length > 0 ? true : false
+    }
+
+    const handleClick = async (route) => {
         if(route === 'signUpRoute'){
             setIsSubmit(false)
             setErrorMessage('')
             router.push('/signup')
         } else if(route == 'signuproute'){
-            if((!emailInput || !password || !firstName || !lastName || !dobMonth || !dobYear || !gender)){
+            if((!emailInput || !password || !firstName || !lastName || !dobDate || !dobMonth || !dobYear || !gender)){
                 setErrorMessage('Please fill all details')
-            } else if(password && firstName && lastName && dobMonth && dobYear && gender && emailInput && emailInput.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
-                setIsSubmit(false)
-                setNotValidEmail(false)
-                setErrorMessage('')
-                router.push('/signup-success')
+            } else if(password && firstName && lastName && dobDate && dobMonth && dobYear && gender && emailInput && emailInput.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
+                const userCreated = await sendDataToDob({firstName, lastName, email: emailInput, password, dateOfBirth: `${dobDate}/${dobMonth}/${dobYear}`,gender}, `signup`)
+                if(userCreated){
+                    setIsSubmit(false)
+                    setNotValidEmail(false)
+                    setErrorMessage('')
+                }
             } else {
                 setIsSubmit(true)
                 setNotValidEmail(true)
+                setErrorMessage('')
             }
         } else if(route == 'loginRoute'){
             if((!emailInput && !password)){
@@ -45,14 +81,20 @@ const Form = ({isLogin, isSignUpPage, isMain}) => {
                 setNotValidEmail(false)
                 router.push('/login')
             } else if(emailInput && password && emailInput.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
-                setIsSubmit(false)
-                setNotValidEmail(false)
-                router.push('/login-success')
+                const isValid = await validLogin({email: emailInput, password})
+                if(isValid){
+                    setIsSubmit(false)
+                    setNotValidEmail(false)
+                    router.push('/login-success')
+                } else{
+                    setErrorMessage('Invalid credentials')
+                }
             } else if(!emailInput || !password){
                 setErrorMessage('Please fill all details')
             } else {
                 setIsSubmit(true)
                 setNotValidEmail(true)
+                setErrorMessage('')
             }
         }
     }
@@ -61,7 +103,7 @@ const Form = ({isLogin, isSignUpPage, isMain}) => {
         e.preventDefault()
         if(field == 'email'){
             setEmailInput(e.target.value)
-            if(notValidEmail && e.target.value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
+            if(notValidEmail && e.target.value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/)){
                 setNotValidEmail(false)
             }else if(isSubmit){
                 setNotValidEmail(true)
@@ -111,17 +153,17 @@ const Form = ({isLogin, isSignUpPage, isMain}) => {
                     <p className={style.icon}>{`?`}</p>
                 </div>
                 <div className={style.dobOptionContainer}>
-                    <select onChange={(e) => handleChange(e,'dobdate')} style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}}>
+                    <select onChange={(e) => handleChange(e,'dobdate')} value={dobDate} style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}}>
                         {[...Array(moment(`${dobYear}-${dobMonth}`, "YYYY-MMM").daysInMonth())]?.map((item, i) => (
                             <option key={i}>{i+1}</option>
                         ))}
                     </select>
-                    <select onChange={(e) => handleChange(e,'dobmonth')} style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}}>
+                    <select onChange={(e) => handleChange(e,'dobmonth')} value={dobMonth} style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}}>
                         {moment.monthsShort()?.map(item => (
                             <option key={item}>{item}</option>
                         ))}
                     </select>
-                    <select onChange={(e) => handleChange(e,'dobyear')} style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}}>
+                    <select onChange={(e) => handleChange(e,'dobyear')} value={dobYear} style={{width: '100%', outline: 'none', borderRadius: '6px',border: '1px solid #dddfe2',padding: '12px 12px',fontSize: '14px',margin: '0 8px 12px 0px'}}>
                         {[...Array(moment().diff('1923-01-01', 'years'))]?.map((item, i) => (
                             <option key={i}>{i+1924}</option>
                         ))}
@@ -166,7 +208,7 @@ const Form = ({isLogin, isSignUpPage, isMain}) => {
                 <Button buttonClass={style.createAccountbutton} handleClick={() => handleClick('signUpRoute')} title={`Create Account`} />
             </>
         )}
-        {(notValidEmail || errorMessage) && <p className={style.error}>{errorMessage || (`The email or mobile number you entered isn’t connected to an account.`(<h4 className={style.errorLink}>{`Find your account and log in.`}</h4>))}</p>}
+        {(notValidEmail || errorMessage) && <p className={style.error}>{errorMessage ? errorMessage : `Invalid email`}</p>}
     </section>
   )
 }
