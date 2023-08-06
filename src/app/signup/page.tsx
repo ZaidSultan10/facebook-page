@@ -5,12 +5,12 @@ import Form from '../../components/Form'
 import { useEffect } from 'react';
 
 const page = () => {
-  useEffect(() => {
+  // useEffect(() => {
     if (typeof window !== 'undefined') {
       console.log(window.innerWidth);
       console.log(window.innerHeight);
     }
-  }, [])
+  // }, [])
   return (
     <main>
         <div className={styles.logoLeftLogo}>
