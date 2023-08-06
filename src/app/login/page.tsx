@@ -1,9 +1,16 @@
-// import React from 'react'
 "use client";
+import React from 'react'
 import styles from '../page.module.css'
 import Form from '../../components/Form'
+import { useEffect } from 'react';
 
 const page = () => {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log(window.innerWidth);
+      console.log(window.innerHeight);
+    }
+  }, [])
   return (
     <main className={styles.loginContainer}>
         <div className={styles.logoLeftLogo}>
