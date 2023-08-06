@@ -6,12 +6,12 @@ import styles from './page.module.css'
 
 export default function Home() {
 
-  useEffect(() => {
+  // useEffect(() => {
     if (typeof window !== 'undefined') {
       console.log(window.innerWidth);
       console.log(window.innerHeight);
     }
-  }, [])
+  // }, [])
   return (
     <main className={styles.main}>
       <div className={styles.mainLeft}>
